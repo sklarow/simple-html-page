@@ -19,4 +19,20 @@ jobs:
           name: html-page
           path: index.html
           retention-days: 30
-
+  trigger-automation:
+      runs-on: ubuntu-latest
+      needs: build # Wait for the build job to complete successfully
+      steps:
+        - name: Trigger automation workflow
+          run: |
+            # Use the GitHub CLI (gh) to dispatch a repository_dispatch event
+            gh api \
+              --method POST \
+              -H "Accept: application/vnd.github.v3+json" \
+              /repos/sklarow/test-simple-html-page/dispatches \
+              -f event_type='trigger-e2e-tests' \
+              -f client_payload='{"run_id": "${{ needs.build.outputs.run_id }}", "repo": "${{ github.repository }}"}'
+          env:
+            # This token needs 'repo' scope and must be a Personal Access Token (PAT)
+            # GITHUB_TOKEN won't work across repositories for repository_dispatch.
+            GH_TOKEN: ${{ secrets.PAT_FOR_TRIGGER }}
