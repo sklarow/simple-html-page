@@ -31,7 +31,7 @@ jobs:
               -H "Accept: application/vnd.github.v3+json" \
               /repos/sklarow/test-simple-html-page/dispatches \
               -f event_type='trigger-e2e-tests' \
-              -f client_payload='{"run_id": "${{ needs.build.outputs.run_id }}", "repo": "${{ github.repository }}"}'
+              --raw-field client_payload="{\"run_id\": \"${{ github.run_id }}\", \"repo\": \"${{ github.repository }}\"}"
           env:
             # This token needs 'repo' scope and must be a Personal Access Token (PAT)
             # GITHUB_TOKEN won't work across repositories for repository_dispatch.
